@@ -1,5 +1,8 @@
+import "./index.css";
+
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { App } from "./app";
 
 const container = document.getElementById("root");
 
@@ -9,4 +12,8 @@ if (container == null) {
 
 const root = createRoot(container);
 
-root.render(<div>Hello World</div>);
+root.render(
+  <div style={{ height: "100vh", width: "100vw" }}>
+    <App />
+  </div>
+);

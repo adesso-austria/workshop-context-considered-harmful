@@ -7,8 +7,7 @@ const shouldServe = process.argv.includes("--serve");
  */
 const buildOptions = {
   entryPoints: {
-    main: "build/index.js",
-    assets: "assets/energy.json",
+    main: "src/index.tsx",
   },
   bundle: true,
   outdir: "bundle",
