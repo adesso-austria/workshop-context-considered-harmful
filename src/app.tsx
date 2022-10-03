@@ -1,3 +1,4 @@
+import { TextField } from "@mui/material";
 import { option, record } from "fp-ts";
 import { pipe } from "fp-ts/lib/function";
 import { last, tap } from "ramda";
@@ -218,15 +219,39 @@ const showStat = (stat: Stat, unit = "") =>
 export const App = function App() {
   const data = useData();
 
+  const [query, setQuery] = React.useState(
+    () => new URLSearchParams(location.search).get("query") ?? ""
+  );
+
+  React.useEffect(() => {
+    const params = new URLSearchParams({ ...(!query ? {} : { query }) });
+    history.replaceState(undefined, "", `?${params.toString()}`);
+  }, [query]);
+
+  const rows = React.useMemo(
+    () => data.filter((row) => row.region.name.includes(query)),
+    [data, query]
+  );
+
   return (
     <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
       <div style={{ maxWidth: 1000 }}>
         <Table
-          rows={data}
+          rows={rows}
           columns={{
-            country: {
+            region: {
               width: 200,
-              header: <>Region</>,
+              header: (
+                <>
+                  Region
+                  <TextField
+                    variant="standard"
+                    placeholder="search..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </>
+              ),
               cell: ({ row }) => <div>{row.region.name}</div>,
             },
             population: {
