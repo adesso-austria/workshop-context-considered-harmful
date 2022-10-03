@@ -1,0 +1,144 @@
+{
+  "main": {
+    "id": "8efa0e6ede01a84e",
+    "type": "split",
+    "children": [
+      {
+        "id": "e4d74821cdb9be9f",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "ideas.md",
+            "mode": "source",
+            "source": false
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "a8570cef13105b0f",
+    "type": "split",
+    "children": [
+      {
+        "id": "0b90af8e33627b7f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f39f963e8ea35329",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "4fbb43d28a5303f9",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "8d66e9d2e187075b",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "0c22e7b830bdc828",
+    "type": "split",
+    "children": [
+      {
+        "id": "5aff0cd1c1b9ab15",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f49ac81cfee76b8e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "ideas.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "9c2400648511d70a",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "ideas.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "1cd83856451a5317",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "269746c8b8761f01",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "ideas.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "e4d74821cdb9be9f",
+  "lastOpenFiles": [
+    "abstract.md",
+    "Frontend Architecture.md",
+    "Backend Architecture.md",
+    "ADRs.md",
+    "templates/ADR.md",
+    "User Stories.md",
+    "System Architecture.md",
+    "Broker Architecture.md",
+    "presentation/draft.md",
+    "Glossary.md"
+  ]
+}
