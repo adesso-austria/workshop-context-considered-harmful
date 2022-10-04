@@ -34,7 +34,7 @@ type BySector = {
   coal: Stat;
 };
 
-type Row = {
+export type Row = {
   region: { name: string; isoCode: string; population: option.Option<number> };
   stats: BySector;
 };
