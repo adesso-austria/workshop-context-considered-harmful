@@ -1,0 +1,61 @@
+#__shell {
+  display: none;
+}
+
+div.__shell {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+  box-sizing: border-box;
+
+  img {
+    box-shadow: none;
+    border-radius: initial;
+  }
+
+  header {
+    font-size: 0.8rem;
+    color: lightgray;
+    padding: 0.5rem;
+    box-sizing: border-box;
+  }
+
+  footer {
+    width: 100%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 2rem;
+    filter: grayscale(1) brightness(140%);
+
+    img.adesso {
+      height: 150%;
+      opacity: 0.5;
+      width: min-content;
+    }
+
+    div.speaker {
+      height: 100%;
+      color: gray;
+      font-size: 0.8rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+
+      img.twitter {
+        fill: lightgray;
+        height: 100%;
+      }
+    }
+  }
+}

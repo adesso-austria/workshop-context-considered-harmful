@@ -1,0 +1,43 @@
+section {
+  box-sizing: border-box;
+  text-align: left;
+  width: 100%;
+  height: 100%;
+
+  section {
+    top: 0;
+  }
+
+  &.stack {
+    pointer-events: initial !important;
+  }
+
+  &.stack,
+  &.no-shell {
+    > .__shell {
+      display: none;
+    }
+  }
+
+  &:not(.stack) {
+    padding: 2rem;
+    font-size: 1.5rem;
+
+    h1,
+    h2,
+    h3 {
+      font-weight: 500;
+    }
+
+    h4 {
+      margin-block: 1rem;
+    }
+
+    h1 {
+      position: relative;
+      color: var(--adesso-blue);
+      font-size: 4rem;
+      margin-block: 0.5rem 2rem;
+    }
+  }
+}
