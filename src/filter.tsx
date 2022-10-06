@@ -81,7 +81,7 @@ const fib = (x: number): number => {
   return x === 0 ? 0 : x === 1 ? 1 : fib(x - 1) + fib(x - 2);
 };
 
-export const FilterArea = function FilterArea() {
+export const FilterArea = React.memo(function FilterArea() {
   const filters = useFilters();
 
   fib(40);
@@ -95,4 +95,4 @@ export const FilterArea = function FilterArea() {
       <EpcFilter />
     </div>
   );
-};
+});
