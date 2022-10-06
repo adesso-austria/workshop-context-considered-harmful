@@ -96,3 +96,8 @@ export const useSetFilter = () => {
       payload: filter,
     });
 };
+
+const selectFilters = (state: State): State["filters"] =>
+  state.filters;
+
+export const useFilters = flow(useState, selectFilters);

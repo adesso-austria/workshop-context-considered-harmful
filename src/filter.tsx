@@ -3,7 +3,7 @@ import { array, option } from "fp-ts";
 import { pipe } from "fp-ts/lib/function";
 import React from "react";
 import { Row, useData } from "./data";
-import { useSetFilter } from "./state";
+import { useFilters, useSetFilter } from "./state";
 
 export type Filter = {
   id: string;
@@ -77,10 +77,21 @@ const EpcFilter = function EpcFilter() {
   );
 };
 
+const fib = (x: number): number => {
+  return x === 0 ? 0 : x === 1 ? 1 : fib(x - 1) + fib(x - 2);
+};
+
 export const FilterArea = function FilterArea() {
+  const filters = useFilters();
+
+  fib(40);
+
   return (
     <div aria-label="Filter Area">
       <Typography variant="h5">Filters</Typography>
+      <Typography variant="h5">
+        Filters ({Object.keys(filters).length})
+      </Typography>
       <EpcFilter />
     </div>
   );
