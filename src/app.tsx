@@ -15,20 +15,20 @@ export const App = function App() {
     pipe(
       new URLSearchParams(location.search).get("dataset"),
       option.fromNullable,
-      option.map(flow(decodeURIComponent, DataSet.matchByName)),
+      option.map(flow(decodeURIComponent, DataSet.matchById)),
       option.getOrElse(() => DataSet.all)
     )
   );
 
   React.useEffect(() => {
     const params = new URLSearchParams({
-      dataset: encodeURIComponent(dataset.name),
+      dataset: encodeURIComponent(dataset.id),
     });
     history.replaceState(undefined, "", `?${params.toString()}`);
   }, [dataset]);
 
   const rows = React.useMemo(
-    () => data.filter(dataset.filter),
+    () => data.filter(dataset.predicate),
     [data, dataset]
   );
 
@@ -56,19 +56,23 @@ export const App = function App() {
   }, [dataset]);
 
   const populationFilter: Filter = React.useMemo(
-    () => (row) => {
-      const [selectedMin, selectedMax] = populationRange;
+    () => ({
+      id: "population",
+      predicate: (row) => {
+        const [selectedMin, selectedMax] = populationRange;
 
-      return pipe(
-        row.region.population,
-        option.map(
-          (population) => selectedMin <= population && population <= selectedMax
-        ),
-        option.getOrElse(
-          () => selectedMin === minPopulation && selectedMax === maxPopulation
-        )
-      );
-    },
+        return pipe(
+          row.region.population,
+          option.map(
+            (population) =>
+              selectedMin <= population && population <= selectedMax
+          ),
+          option.getOrElse(
+            () => selectedMin === minPopulation && selectedMax === maxPopulation
+          )
+        );
+      },
+    }),
     [populationRange]
   );
 
@@ -79,7 +83,10 @@ export const App = function App() {
 
   const filteredRows = React.useMemo(
     () =>
-      filters.reduce((filtered, predicate) => filtered.filter(predicate), rows),
+      filters.reduce(
+        (filtered, filter) => filtered.filter(filter.predicate),
+        rows
+      ),
     [rows, filters]
   );
 
@@ -99,22 +106,18 @@ export const App = function App() {
           <Select
             variant="standard"
             label="Dataset"
-            value={dataset.name}
-            onChange={(e) => setDataset(DataSet.matchByName(e.target.value))}
+            value={dataset.id}
+            onChange={(e) => setDataset(DataSet.matchById(e.target.value))}
           >
             <MenuItem value="All">All</MenuItem>
-            <MenuItem value={DataSet.hugePop.name}>
-              {DataSet.hugePop.name}
+            <MenuItem value={DataSet.hugePop.id}>{DataSet.hugePop.id}</MenuItem>
+            <MenuItem value={DataSet.mediumPop.id}>
+              {DataSet.mediumPop.id}
             </MenuItem>
-            <MenuItem value={DataSet.mediumPop.name}>
-              {DataSet.mediumPop.name}
+            <MenuItem value={DataSet.smallPop.id}>
+              {DataSet.smallPop.id}
             </MenuItem>
-            <MenuItem value={DataSet.smallPop.name}>
-              {DataSet.smallPop.name}
-            </MenuItem>
-            <MenuItem value={DataSet.tinyPop.name}>
-              {DataSet.tinyPop.name}
-            </MenuItem>
+            <MenuItem value={DataSet.tinyPop.id}>{DataSet.tinyPop.id}</MenuItem>
           </Select>
         </div>
         <div aria-label="Filter Area">
