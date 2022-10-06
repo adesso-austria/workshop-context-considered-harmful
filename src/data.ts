@@ -35,7 +35,12 @@ type BySector = {
 };
 
 export type Row = {
-  region: { name: string; isoCode: string; population: option.Option<number> };
+  region: {
+    name: string;
+    isoCode: string;
+    population: option.Option<number>;
+    energyPerCapita: option.Option<number>;
+  };
   stats: BySector;
 };
 
@@ -56,7 +61,6 @@ export const showStat = (stat: Stat, unit = "") =>
     ),
     showOption
   );
-
 
 /**
  * use remote data
@@ -81,6 +85,7 @@ export const useData = () => {
             name,
             isoCode: iso_code,
             population: option.fromNullable(current?.population),
+            energyPerCapita: option.fromNullable(current?.energy_per_capita),
           },
           stats: {
             wind: createStat(

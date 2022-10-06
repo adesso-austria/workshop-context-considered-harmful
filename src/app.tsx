@@ -33,53 +33,49 @@ export const App = function App() {
   );
 
   /**
-   * POPULATION FILTER
+   * Energy per capita (EPC) FILTER
    */
-  const [minPopulation, maxPopulation] = React.useMemo(() => {
-    const populations = pipe(
-      rows,
-      array.map((row) => row.region.population),
+  const [minEpc, maxEpc] = React.useMemo(() => {
+    const epcs = pipe(
+      data,
+      array.map((row) => row.region.energyPerCapita),
       array.compact
     );
 
-    return populations.length === 0
+    return epcs.length === 0
       ? [-Infinity, Infinity] // 0 length would create [Infinity, -Infinity]
-      : [Math.min(...populations), Math.max(...populations)];
-  }, [rows]);
+      : [Math.min(...epcs), Math.max(...epcs)];
+  }, [data]);
 
-  const [populationRange, setPopulationRange] = React.useState(
-    () => [minPopulation, maxPopulation] as const
+  const [epcRange, setEpcRange] = React.useState(
+    () => [minEpc, maxEpc] as const
   );
 
-  React.useEffect(() => {
-    setPopulationRange([-Infinity, Infinity]);
-  }, [dataset]);
-
-  const populationFilter: Filter = React.useMemo(
+  const epcFilter: Filter = React.useMemo(
     () => ({
-      id: "population",
+      id: "epc",
       predicate: (row) => {
-        const [selectedMin, selectedMax] = populationRange;
+        const [selectedMin, selectedMax] = epcRange;
 
         return pipe(
-          row.region.population,
+          row.region.energyPerCapita,
           option.map(
-            (population) =>
-              selectedMin <= population && population <= selectedMax
+            (epc) =>
+              selectedMin <= epc && epc <= selectedMax
           ),
           option.getOrElse(
-            () => selectedMin === minPopulation && selectedMax === maxPopulation
+            () => selectedMin === minEpc && selectedMax === maxEpc
           )
         );
       },
     }),
-    [populationRange]
+    [epcRange]
   );
 
   /**
    * FILTERING
    */
-  const filters = React.useMemo(() => [populationFilter], [populationFilter]);
+  const filters = React.useMemo(() => [epcFilter], [epcFilter]);
 
   const filteredRows = React.useMemo(
     () =>
@@ -124,16 +120,16 @@ export const App = function App() {
           <Typography variant="h5">Filters</Typography>
           <div>
             <Typography variant="body1" style={{ textAlign: "center" }}>
-              Population
+              Energy per capita
             </Typography>
             <Slider
               // mui typings aren't very precise
-              value={populationRange as unknown as number[]}
+              value={epcRange as unknown as number[]}
               onChange={(_e, newValue) =>
-                setPopulationRange(newValue as [number, number])
+                setEpcRange(newValue as [number, number])
               }
-              min={minPopulation}
-              max={maxPopulation}
+              min={minEpc}
+              max={maxEpc}
               valueLabelDisplay="on"
             />
           </div>
