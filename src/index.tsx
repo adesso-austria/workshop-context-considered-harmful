@@ -3,6 +3,7 @@ import "./index.css";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
+import { StateProvider } from "./state";
 
 const container = document.getElementById("root");
 
@@ -14,6 +15,8 @@ const root = createRoot(container);
 
 root.render(
   <div style={{ height: "100vh", width: "100vw" }}>
-    <App />
+    <StateProvider>
+      <App />
+    </StateProvider>
   </div>
 );
