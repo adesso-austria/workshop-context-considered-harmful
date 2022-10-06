@@ -1,8 +1,11 @@
+import { MenuItem, Select, Typography } from "@mui/material";
 import { option } from "fp-ts";
 import { flow, pipe } from "fp-ts/lib/function";
+import React from "react";
 import { match } from "ts-pattern";
 import { Row } from "./data";
 import { Filter } from "./filter";
+import { useSetDataset } from "./state";
 
 export const all: Filter = { id: "All", predicate: () => true };
 
@@ -50,3 +53,44 @@ export const matchById = (id: string) =>
     .with(smallPop.id, () => smallPop)
     .with(tinyPop.id, () => tinyPop)
     .otherwise(() => all);
+
+export const DataSet = function DataSet() {
+  const [dataset, setDataset] = React.useState(() =>
+    pipe(
+      new URLSearchParams(location.search).get("dataset"),
+      option.fromNullable,
+      option.map(flow(decodeURIComponent, matchById)),
+      option.getOrElse(() => all)
+    )
+  );
+
+  React.useEffect(() => {
+    const params = new URLSearchParams({
+      dataset: encodeURIComponent(dataset.id),
+    });
+    history.replaceState(undefined, "", `?${params.toString()}`);
+  }, [dataset]);
+
+  const setStoreDataset = useSetDataset();
+  React.useEffect(() => {
+    setStoreDataset(dataset);
+  }, [dataset]);
+
+  return (
+    <div aria-label="Header">
+      <Typography variant="h5">Dataset</Typography>
+      <Select
+        variant="standard"
+        label="Dataset"
+        value={dataset.id}
+        onChange={(e) => setDataset(matchById(e.target.value))}
+      >
+        <MenuItem value="All">All</MenuItem>
+        <MenuItem value={hugePop.id}>{hugePop.id}</MenuItem>
+        <MenuItem value={mediumPop.id}>{mediumPop.id}</MenuItem>
+        <MenuItem value={smallPop.id}>{smallPop.id}</MenuItem>
+        <MenuItem value={tinyPop.id}>{tinyPop.id}</MenuItem>
+      </Select>
+    </div>
+  );
+};

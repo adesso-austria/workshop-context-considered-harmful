@@ -1,90 +1,21 @@
-import { Divider, MenuItem, Select, Slider, Typography } from "@mui/material";
-import { array, option } from "fp-ts";
-import { flow, pipe } from "fp-ts/lib/function";
+import { Divider } from "@mui/material";
+import { option } from "fp-ts";
+import { pipe } from "fp-ts/lib/function";
 import React from "react";
 import { showOption, showStat, useData } from "./data";
 import * as DataSet from "./dataset";
-import { Filter } from "./filter";
+import { FilterArea } from "./filter";
 import { formatMilleSuffix } from "./format";
+import { useFilteredRows, useSetData } from "./state";
 import { Table } from "./table";
 
 export const App = function App() {
+  const setData = useSetData();
+
   const data = useData();
+  React.useEffect(() => setData(data), [data]);
 
-  const [dataset, setDataset] = React.useState(() =>
-    pipe(
-      new URLSearchParams(location.search).get("dataset"),
-      option.fromNullable,
-      option.map(flow(decodeURIComponent, DataSet.matchById)),
-      option.getOrElse(() => DataSet.all)
-    )
-  );
-
-  React.useEffect(() => {
-    const params = new URLSearchParams({
-      dataset: encodeURIComponent(dataset.id),
-    });
-    history.replaceState(undefined, "", `?${params.toString()}`);
-  }, [dataset]);
-
-  const rows = React.useMemo(
-    () => data.filter(dataset.predicate),
-    [data, dataset]
-  );
-
-  /**
-   * Energy per capita (EPC) FILTER
-   */
-  const [minEpc, maxEpc] = React.useMemo(() => {
-    const epcs = pipe(
-      data,
-      array.map((row) => row.region.energyPerCapita),
-      array.compact
-    );
-
-    return epcs.length === 0
-      ? [-Infinity, Infinity] // 0 length would create [Infinity, -Infinity]
-      : [Math.min(...epcs), Math.max(...epcs)];
-  }, [data]);
-
-  const [epcRange, setEpcRange] = React.useState(
-    () => [minEpc, maxEpc] as const
-  );
-
-  const epcFilter: Filter = React.useMemo(
-    () => ({
-      id: "epc",
-      predicate: (row) => {
-        const [selectedMin, selectedMax] = epcRange;
-
-        return pipe(
-          row.region.energyPerCapita,
-          option.map(
-            (epc) =>
-              selectedMin <= epc && epc <= selectedMax
-          ),
-          option.getOrElse(
-            () => selectedMin === minEpc && selectedMax === maxEpc
-          )
-        );
-      },
-    }),
-    [epcRange]
-  );
-
-  /**
-   * FILTERING
-   */
-  const filters = React.useMemo(() => [epcFilter], [epcFilter]);
-
-  const filteredRows = React.useMemo(
-    () =>
-      filters.reduce(
-        (filtered, filter) => filtered.filter(filter.predicate),
-        rows
-      ),
-    [rows, filters]
-  );
+  const rows = useFilteredRows();
 
   return (
     <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
@@ -97,46 +28,11 @@ export const App = function App() {
           gap: "1rem",
         }}
       >
-        <div aria-label="Header">
-          <Typography variant="h5">Dataset</Typography>
-          <Select
-            variant="standard"
-            label="Dataset"
-            value={dataset.id}
-            onChange={(e) => setDataset(DataSet.matchById(e.target.value))}
-          >
-            <MenuItem value="All">All</MenuItem>
-            <MenuItem value={DataSet.hugePop.id}>{DataSet.hugePop.id}</MenuItem>
-            <MenuItem value={DataSet.mediumPop.id}>
-              {DataSet.mediumPop.id}
-            </MenuItem>
-            <MenuItem value={DataSet.smallPop.id}>
-              {DataSet.smallPop.id}
-            </MenuItem>
-            <MenuItem value={DataSet.tinyPop.id}>{DataSet.tinyPop.id}</MenuItem>
-          </Select>
-        </div>
-        <div aria-label="Filter Area">
-          <Typography variant="h5">Filters</Typography>
-          <div>
-            <Typography variant="body1" style={{ textAlign: "center" }}>
-              Energy per capita
-            </Typography>
-            <Slider
-              // mui typings aren't very precise
-              value={epcRange as unknown as number[]}
-              onChange={(_e, newValue) =>
-                setEpcRange(newValue as [number, number])
-              }
-              min={minEpc}
-              max={maxEpc}
-              valueLabelDisplay="on"
-            />
-          </div>
-        </div>
+        <DataSet.DataSet />
+        <FilterArea />
         <Divider />
         <Table
-          rows={filteredRows}
+          rows={rows}
           columns={{
             region: {
               width: 200,
