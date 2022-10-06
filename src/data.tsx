@@ -65,7 +65,7 @@ export const showStat = (stat: Stat, unit = "") =>
 /**
  * use remote data
  */
-export const useData = () => {
+export const useRemoteData = () => {
   const [data, setData] = React.useState([] as Row[]);
 
   React.useEffect(() => {
@@ -160,3 +160,22 @@ export const useData = () => {
 
   return data;
 };
+
+const context = React.createContext<
+  [Row[], React.Dispatch<React.SetStateAction<Row[]>>]
+>([
+  [],
+  () => {
+    /*ignore*/
+  },
+]);
+export const DataProvider = function DataProvider({
+  children,
+}: React.PropsWithChildren) {
+  const state = React.useState([] as Row[]);
+
+  return <context.Provider value={state}>{children}</context.Provider>;
+};
+
+export const useData = () => React.useContext(context)[0];
+export const useSetData = () => React.useContext(context)[1];

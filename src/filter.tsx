@@ -3,7 +3,7 @@ import { array, option } from "fp-ts";
 import { pipe } from "fp-ts/lib/function";
 import React from "react";
 import { Row, useData } from "./data";
-import { useFilters, useSetFilter } from "./state";
+import { useDatasetRows } from "./dataset";
 
 export type Filter = {
   id: string;
@@ -40,10 +40,7 @@ const EpcFilter = function EpcFilter() {
 
         return pipe(
           row.region.energyPerCapita,
-          option.map(
-            (epc) =>
-              selectedMin <= epc && epc <= selectedMax
-          ),
+          option.map((epc) => selectedMin <= epc && epc <= selectedMax),
           option.getOrElse(
             () => selectedMin === minEpc && selectedMax === maxEpc
           )
@@ -66,9 +63,7 @@ const EpcFilter = function EpcFilter() {
       <Slider
         // mui typings aren't very precise
         value={epcRange as unknown as number[]}
-        onChange={(_e, newValue) =>
-          setEpcRange(newValue as [number, number])
-        }
+        onChange={(_e, newValue) => setEpcRange(newValue as [number, number])} 
         min={minEpc}
         max={maxEpc}
         valueLabelDisplay="on"
@@ -96,3 +91,42 @@ export const FilterArea = React.memo(function FilterArea() {
     </div>
   );
 });
+
+const context = React.createContext<
+  [
+    Record<string, Filter>,
+    React.Dispatch<React.SetStateAction<Record<string, Filter>>>
+  ]
+>([
+  {},
+  () => {
+    /*ignore*/
+  },
+]);
+
+export const FiltersProvider = function FiltersProvider({
+  children,
+}: React.PropsWithChildren) {
+  const state = React.useState({} as Record<string, Filter>);
+
+  return <context.Provider value={state}>{children}</context.Provider>;
+};
+
+export const useFilters = () => React.useContext(context)[0];
+export const useSetFilter = () => {
+  const setState = React.useContext(context)[1];
+
+  return (filter: Filter) =>
+    setState((current) => ({
+      ...current,
+      [filter.id]: filter,
+    }));
+};
+
+export const useFilteredRows = () => {
+  const datasetRows = useDatasetRows();
+  const filters = Object.values(useFilters());
+  return datasetRows.filter((row) =>
+    filters.every((filter) => filter.predicate(row))
+  );
+};

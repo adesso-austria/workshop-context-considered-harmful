@@ -3,7 +3,9 @@ import "./index.css";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app";
-import { StateProvider } from "./state";
+import { DataProvider } from "./data";
+import { DataSetProvider } from "./dataset";
+import { FiltersProvider } from "./filter";
 
 const container = document.getElementById("root");
 
@@ -15,8 +17,12 @@ const root = createRoot(container);
 
 root.render(
   <div style={{ height: "100vh", width: "100vw" }}>
-    <StateProvider>
-      <App />
-    </StateProvider>
+    <DataProvider>
+      <DataSetProvider>
+        <FiltersProvider>
+          <App />
+        </FiltersProvider>
+      </DataSetProvider>
+    </DataProvider>
   </div>
 );

@@ -2,17 +2,16 @@ import { Divider } from "@mui/material";
 import { option } from "fp-ts";
 import { pipe } from "fp-ts/lib/function";
 import React from "react";
-import { showOption, showStat, useData } from "./data";
+import { showOption, showStat, useRemoteData, useSetData } from "./data";
 import * as DataSet from "./dataset";
-import { FilterArea } from "./filter";
+import { FilterArea, useFilteredRows } from "./filter";
 import { formatMilleSuffix } from "./format";
-import { useFilteredRows, useSetData } from "./state";
 import { Table } from "./table";
 
 export const App = function App() {
   const setData = useSetData();
 
-  const data = useData();
+  const data = useRemoteData();
   React.useEffect(() => setData(data), [data]);
 
   const rows = useFilteredRows();

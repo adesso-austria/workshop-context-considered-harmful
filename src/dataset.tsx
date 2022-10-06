@@ -3,9 +3,8 @@ import { option } from "fp-ts";
 import { flow, pipe } from "fp-ts/lib/function";
 import React from "react";
 import { match } from "ts-pattern";
-import { Row } from "./data";
+import { Row, useData } from "./data";
 import { Filter } from "./filter";
-import { useSetDataset } from "./state";
 
 export const all: Filter = { id: "All", predicate: () => true };
 
@@ -73,7 +72,7 @@ export const DataSet = function DataSet() {
 
   const setStoreDataset = useSetDataset();
   React.useEffect(() => {
-    setStoreDataset(dataset);
+    setStoreDataset(option.some(dataset));
   }, [dataset]);
 
   return (
@@ -92,5 +91,38 @@ export const DataSet = function DataSet() {
         <MenuItem value={tinyPop.id}>{tinyPop.id}</MenuItem>
       </Select>
     </div>
+  );
+};
+
+const context = React.createContext<
+  [
+    option.Option<Filter>,
+    React.Dispatch<React.SetStateAction<option.Option<Filter>>>
+  ]
+>([
+  option.none,
+  () => {
+    /*ignore*/
+  },
+]);
+export const DataSetProvider = function DataSetProvider({
+  children,
+}: React.PropsWithChildren) {
+  const state = React.useState(option.none as option.Option<Filter>);
+
+  return <context.Provider value={state}>{children}</context.Provider>;
+};
+
+export const useDataset = () => React.useContext(context)[0];
+export const useSetDataset = () => React.useContext(context)[1];
+
+export const useDatasetRows = () => {
+  const data = useData();
+  const dataset = useDataset();
+
+  return pipe(
+    dataset,
+    option.map((dataset) => data.filter(dataset.predicate)),
+    option.getOrElse(() => data)
   );
 };
