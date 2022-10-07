@@ -178,7 +178,7 @@ const next = reducer(0, { type: "multiply", payload: 42 });
 
 # Factoring out orthogonal responsibilities
 
-### task-01
+`git checkout start-task-01`
 
 </div>
 
@@ -483,7 +483,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 
 # Where the problems start
 
-### task-02
+`git checkout start-task-02`
 
 </div>
 
@@ -571,7 +571,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 
 # Splitting contexts
 
-### task-03
+`git checkout start-task-03`
 
 </div>
 
@@ -732,7 +732,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 
 # Hitting a wall
 
-### task-04
+`git checkout start-task-04`
 
 </div>
 
@@ -814,7 +814,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 <div class="center">
 
 # Time to rethink
-### task-05
+`git checkout start-task-05`
 
 </div>
 
