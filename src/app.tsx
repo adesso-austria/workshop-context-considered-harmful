@@ -59,10 +59,9 @@ export const App = function App() {
 
         return pipe(
           row.region.energyPerCapita,
-          option.map(
-            (epc) =>
-              selectedMin <= epc && epc <= selectedMax
-          ),
+          // map an eventually available number to an eventually available boolean
+          option.map((epc) => selectedMin <= epc && epc <= selectedMax),
+          // if no boolean is available, define a fallback
           option.getOrElse(
             () => selectedMin === minEpc && selectedMax === maxEpc
           )
