@@ -4,7 +4,7 @@ import { flow, pipe } from "fp-ts/lib/function";
 import React from "react";
 import { match } from "ts-pattern";
 import { Row, useData } from "./data";
-import { Filter } from "./filter";
+import { Filter, useFilteredRows } from "./filter";
 
 export const all: Filter = { id: "All", predicate: () => true };
 
@@ -53,6 +53,8 @@ export const matchById = (id: string) =>
     .with(tinyPop.id, () => tinyPop)
     .otherwise(() => all);
 
+const datasets = [hugePop, mediumPop, smallPop, tinyPop];
+
 export const DataSet = function DataSet() {
   const [dataset, setDataset] = React.useState(() =>
     pipe(
@@ -75,6 +77,8 @@ export const DataSet = function DataSet() {
     setStoreDataset(option.some(dataset));
   }, [dataset]);
 
+  const eligibleDatasets = useEligibleDatasets();
+
   return (
     <div aria-label="Header">
       <Typography variant="h5">Dataset</Typography>
@@ -85,36 +89,52 @@ export const DataSet = function DataSet() {
         onChange={(e) => setDataset(matchById(e.target.value))}
       >
         <MenuItem value="All">All</MenuItem>
-        <MenuItem value={hugePop.id}>{hugePop.id}</MenuItem>
-        <MenuItem value={mediumPop.id}>{mediumPop.id}</MenuItem>
-        <MenuItem value={smallPop.id}>{smallPop.id}</MenuItem>
-        <MenuItem value={tinyPop.id}>{tinyPop.id}</MenuItem>
+        {eligibleDatasets.map((dataset) => (
+          <MenuItem key={dataset.id} value={dataset.id}>
+            {dataset.id}
+          </MenuItem>
+        ))}
       </Select>
     </div>
   );
 };
 
-const context = React.createContext<
-  [
+const context = React.createContext<{
+  dataset: [
     option.Option<Filter>,
     React.Dispatch<React.SetStateAction<option.Option<Filter>>>
-  ]
->([
-  option.none,
-  () => {
-    /*ignore*/
-  },
-]);
+  ];
+  eligibleDatasets: Filter[];
+}>({
+  dataset: [
+    option.none,
+    () => {
+      /*ignore*/
+    },
+  ],
+  eligibleDatasets: [],
+});
 export const DataSetProvider = function DataSetProvider({
   children,
 }: React.PropsWithChildren) {
-  const state = React.useState(option.none as option.Option<Filter>);
+  const dataset = React.useState(option.none as option.Option<Filter>);
 
-  return <context.Provider value={state}>{children}</context.Provider>;
+  const filteredRows = useFilteredRows();
+  const eligibleDatasets = React.useMemo(() => {
+    return datasets.filter(
+      (dataset) => filteredRows.filter(dataset.predicate).length > 0
+    );
+  }, [filteredRows]);
+
+  return (
+    <context.Provider value={{ dataset, eligibleDatasets }}>
+      {children}
+    </context.Provider>
+  );
 };
 
-export const useDataset = () => React.useContext(context)[0];
-export const useSetDataset = () => React.useContext(context)[1];
+export const useDataset = () => React.useContext(context).dataset[0];
+export const useSetDataset = () => React.useContext(context).dataset[1];
 
 export const useDatasetRows = () => {
   const data = useData();
@@ -126,3 +146,5 @@ export const useDatasetRows = () => {
     option.getOrElse(() => data)
   );
 };
+
+export const useEligibleDatasets = () => React.useContext(context).eligibleDatasets;
