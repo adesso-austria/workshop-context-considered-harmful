@@ -126,10 +126,12 @@ const reducer = (count, action) =>
   match(action)
     .with({ type: "increment" }, () => count + 1)
     .with({ type: "decrement" }, () => count - 1)
-    .with({ type: "multiply" }, ({ payload: by }) => count * by)
+    .with({ type: "multiply" }, ({ by }) => count * by)
     .otherwise(() => count);
 
-const next = reducer(0, { type: "multiply", payload: 42 });
+const state1 = reducer(21, { type: "decrement" }); // 20
+const state2 = reducer(state1, { type: "increment" }); // 21
+const state3 = reducer(state2, { type: "multiply", by: 2 }); // 42
 ```
 
 :::speaker
@@ -505,7 +507,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
     return x === 0 ? 0 : x === 1 ? 1 : fib(x - 1) + fib(x - 2);
   };
   ```
-  - WARNING: do ***NOT*** overdo it, start with maybe `fib(20)` and work up in increments of 5. I'm serious.
+  - WARNING: do **_NOT_** overdo it, start with maybe `fib(20)` and work up in increments of 5. I'm serious.
 - change the dataset
 
 </div>
@@ -518,7 +520,8 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 
 # It's slow...
 
-### but why? 
+### but why?
+
 ###### Nothing changes in the FilterArea?
 
 </div>
@@ -638,6 +641,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 - create a `DataSetProvider` with local state
 - create two hooks `useDataset` and `useSetDataset`
 - create a hook `useDatasetRows`
+
   ```typescript
   export const useDatasetRows = () => {
     const data = useData();
@@ -776,7 +780,6 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 
 ::::
 
-
 ::::slide
 
 <div class="center">
@@ -794,6 +797,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 # Wrap-Up
 
 #### splitting contexts leads to:
+
 - added complexity
 - risk of circular dependencies
 - solving it grows ever more complex
@@ -814,6 +818,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 <div class="center">
 
 # Time to rethink
+
 `git checkout start-task-05`
 
 </div>
@@ -837,17 +842,17 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 - install `rxjs`
 - create `store` in `StateProvider`
   ```typescript
-  const store = React.useMemo(
-    () => new BehaviorSubject(initialState), 
-    []
-  )
+  const store = React.useMemo(() => new BehaviorSubject(initialState), []);
   ```
 - create `dispatch` in `StateProvider`
   ```typescript
-  const dispatch = React.useCallback((action: Action) => {
-    const next = reducer(store.value, action);
-    store.next(next);
-  }, [store])
+  const dispatch = React.useCallback(
+    (action: Action) => {
+      const next = reducer(store.value, action);
+      store.next(next);
+    },
+    [store]
+  );
   ```
 - change the context to match `BehaviorSubject<State>`
 
@@ -862,12 +867,11 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 # Observing state
 
 - write a `useSelector` hook
+
   ```typescript
   function useSelector<T>(selector: (state: State) => T) {
     const state = useState();
-    const [selected, setSelected] = React.useState(
-      () => selector(state.value)
-    );
+    const [selected, setSelected] = React.useState(() => selector(state.value));
 
     React.useEffect(() => {
       const subscription = state
