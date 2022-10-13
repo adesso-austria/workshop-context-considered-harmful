@@ -34,6 +34,7 @@ export const App = function App() {
 
   /**
    * Energy per capita (EPC) FILTER
+   * minimum and maximum epc values based on all data
    */
   const [minEpc, maxEpc] = React.useMemo(() => {
     const epcs = pipe(
