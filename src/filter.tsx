@@ -77,7 +77,6 @@ export const FilterArea = React.memo(function FilterArea() {
 
   return (
     <div aria-label="Filter Area">
-      <Typography variant="h5">Filters</Typography>
       <Typography variant="h5">
         Filters ({Object.keys(filters).length})
       </Typography>
