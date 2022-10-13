@@ -180,7 +180,7 @@ const state3 = reducer(state2, { type: "multiply", by: 2 }); // 42
 
 # Factoring out orthogonal responsibilities
 
-`git checkout start-task-01`
+git tag: `start-task-01`
 
 </div>
 
@@ -192,8 +192,9 @@ const state3 = reducer(state2, { type: "multiply", by: 2 }); // 42
 
 # DataSet
 
-- move everything concerning the dataset select to a new component `DataSet` in the dataset module
+- move everything concerning the dataset dropdown to a new component `DataSet` in the dataset module
   - don't forget to rename the file if you want to use jsx
+  - also transfer `useData`
 - add all necessary imports
   - `pipe` should come from `fp-ts/lib/function`
 - don't worry about dependent state and compile time errors yet
@@ -210,6 +211,7 @@ const state3 = reducer(state2, { type: "multiply", by: 2 }); // 42
 
 - move everything concerning the filter area to a new component `FilterArea` in the filter module
   - don't forget to rename the file if you want to use jsx
+  - also transfer `useData`
 - add all necessary imports
   - `pipe` should come from `fp-ts/lib/function`
 - don't worry about dependent state and compile time errors yet
@@ -259,6 +261,12 @@ const state3 = reducer(state2, { type: "multiply", by: 2 }); // 42
 
 </div>
 
+:::speaker
+
+- use context to share state across multiple components
+
+:::
+
 ::::
 
 ::::slide{.bg-black}
@@ -272,7 +280,10 @@ const state3 = reducer(state2, { type: "multiply", by: 2 }); // 42
   - current data (initially empty)
   - maybe a dataset (initially `option.none`)
   - record of filters by id (initially empty)
-- define actions that set the respective state values
+- define actions
+  - `SetData`: sets the current data
+  - `SetDataSet`: sets the selected dataset
+  - `SetFilter`: changes a single filter
 - write the reducer (tip: use `ts-pattern/match`)
 
 </div>
@@ -407,6 +418,12 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 # Updating data
 
 - create `useSetData` in `state.tsx`
+  ```typescript
+  export const useSetData = () => {
+    const dispatch = useDispatch();
+    return (data: Row[]) => dispatch({ type: "set data", payload: data });
+  };
+  ```
 - use the hook in `App`
 
   ```typescript
@@ -485,7 +502,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 
 # Where the problems start
 
-`git checkout start-task-02`
+git tag: `start-task-02`
 
 </div>
 
@@ -501,13 +518,12 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
   - should just return the current filters
   - wrap it in hook again `useFilters`
 - display the size of the filters in `FilterArea`
-- simulate slow UI by calculating `fib(x)` on every render
+- simulate slow `FilterArea` UI by calculating `fib(40)` on every render
   ```typescript
   const fib = (x: number): number => {
     return x === 0 ? 0 : x === 1 ? 1 : fib(x - 1) + fib(x - 2);
   };
   ```
-  - WARNING: do **_NOT_** overdo it, start with maybe `fib(20)` and work up in increments of 5. I'm serious.
 - change the dataset
 
 </div>
@@ -556,6 +572,8 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 - consumers rerender, regardless of relevance
 - since we're using context `React.memo` has no effect
 
+<h3 class="fragment">What now?</h3>
+
 </div>
 
 ::::
@@ -574,7 +592,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 
 # Splitting contexts
 
-`git checkout start-task-03`
+git tag: `start-task-03`
 
 </div>
 
@@ -611,7 +629,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 # Data
 
 - rename `data.ts` to `data.tsx`
-- rename `data.tsx/useData` to `useRemoteData`
+- rename `data.tsx/useData` to `useRemoteData` (don't refactor, just rename)
 - create a react context that holds data and the update function
   ```typescript
   const context = React.createContext<
@@ -625,6 +643,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
   ```
 - create a `DataProvider` with local state
 - create two hooks `useData` and `useSetData`
+- change `app.tsx` to `useRemoteData`
 
 </div>
 
@@ -736,7 +755,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 
 # Hitting a wall
 
-`git checkout start-task-04`
+git tag: `start-task-04`
 
 </div>
 
@@ -761,8 +780,17 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 # Eligible datasets
 
 - change the dataset context to hold
-  - the currently selected dataset
-  - a list of eligible datasets
+  ```typescript
+  type Context = {
+    dataset: [
+      option.Option<Filter>,
+      React.Dispatch<React.SetStateAction<option.Option<Filter>>>
+    ];
+    eligibleDatasets: Filter[];
+  };
+  ```
+- calculate eligible datasets in `DataSetProvider`
+  - based on `useFilteredRows`
 - create a new hook `useEligibleDatasets`
 - only display the eligible datasets
 
@@ -819,7 +847,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 
 # Time to rethink
 
-`git checkout start-task-05`
+git tag: `start-task-05`
 
 </div>
 
@@ -842,7 +870,10 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
 - install `rxjs`
 - create `store` in `StateProvider`
   ```typescript
-  const store = React.useMemo(() => new BehaviorSubject(initialState), []);
+  const store = React.useMemo(
+    () => new BehaviorSubject(initialState), 
+    []
+  );
   ```
 - create `dispatch` in `StateProvider`
   ```typescript
@@ -854,7 +885,7 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
     [store]
   );
   ```
-- change the context to match `BehaviorSubject<State>`
+- change the context to `[BehaviorSubject<State>, React.Dispatch<Action>]`
 
 </div>
 
@@ -871,7 +902,9 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
   ```typescript
   function useSelector<T>(selector: (state: State) => T) {
     const state = useState();
-    const [selected, setSelected] = React.useState(() => selector(state.value));
+    const [selected, setSelected] = React.useState(
+      () => selector(state.value)
+    );
 
     React.useEffect(() => {
       const subscription = state
