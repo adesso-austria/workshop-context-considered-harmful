@@ -52,11 +52,15 @@
 
 ::::slide{#agenda}
 
+<div class="center">
+
 # Agenda
 
 1. Refresher
 1. Intro
 1. Journey into the unknown
+
+</div>
 
 ::::
 
