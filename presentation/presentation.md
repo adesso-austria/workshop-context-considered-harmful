@@ -425,7 +425,8 @@ export const useFilteredRows = flow(useState, selectFilteredRows);
   ```typescript
   export const useSetData = () => {
     const dispatch = useDispatch();
-    return (data: Row[]) => dispatch({ type: "set data", payload: data });
+    return (data: Row[]) => 
+      dispatch({ type: "set data", payload: data });
   };
   ```
 - use the hook in `App`
