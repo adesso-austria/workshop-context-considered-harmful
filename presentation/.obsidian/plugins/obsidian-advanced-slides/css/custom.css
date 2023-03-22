@@ -1,0 +1,41 @@
+.callout {
+  width: 90%;
+  text-align: initial;
+  font-size: 2rem;
+  --r-block-margin: 0;
+  border: none;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.callout .callout-title {
+  padding: 0.5rem 1rem;
+  box-shadow: 0 5px 15px rgb(0 0 0 / 15%);
+}
+
+.callout .callout-content {
+  padding: 1rem;
+}
+
+.callout ul {
+  margin: 0 0 0 -0.5rem;
+}
+
+code {
+  padding: 0 0.4em;
+  margin: 0;
+  font-size: 85%;
+  white-space: break-spaces;
+  background-color: rgba(110 118 129 / 40%);
+  border-radius: 6px;
+}
+
+.reveal pre code {
+  line-height: 1.7;
+  border-radius: 0.5rem;
+  max-height: initial;
+}
+
+li {
+  line-height: 1.3;
+}
