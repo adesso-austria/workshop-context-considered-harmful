@@ -35,12 +35,12 @@
         ]
       },
       {
-        "id": "51e06df26df3c4a5",
+        "id": "f2318ae94e3b1529",
         "type": "tabs",
         "dimension": 50,
         "children": [
           {
-            "id": "3591141c42b3cce7",
+            "id": "1012c6fa4416dc4f",
             "type": "leaf",
             "state": {
               "type": "reveal-preview-view",
@@ -178,8 +178,9 @@
       "obsidian-excalidraw-plugin:Create new drawing": false
     }
   },
-  "active": "fc5a6f05069782f6",
+  "active": "1012c6fa4416dc4f",
   "lastOpenFiles": [
+    "presentation.pdf",
     "images/Drawing 2023-03-22 00.28.20.excalidraw.md",
     "presentation.md",
     "images/Drawing 2023-03-22 00.28.20.excalidraw.png",
